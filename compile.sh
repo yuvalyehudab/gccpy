@@ -33,11 +33,13 @@ fi
 # conda init
 eval "$(${C_BIN} shell.bash hook) 2> /dev/null"
 
-# uncomment when debugging
-# set -ev
+# uncomment '-v' when debugging
+set -e #-v
 
-${C_BIN} create -y -q -n udocker python=3.8
-conda activate udocker
+if [[ `conda info --env | grep udocker | awk '{ print $1 }'` == "udocker-gccpy" ]]; then
+    ${C_BIN} create -y -q -n udocker python=3.8
+fi
+conda activate udocker-gccpy
 
 # think that this is not necessary
 # export PATH=${BASE_DIR}/udocker:${PATH}
@@ -48,4 +50,29 @@ ${U_BASE}/udocker install
 
 ln -s ${U_BASE} ./udocker 2> /dev/null
 
-python compile.py
+# cancelled. replaced with direct script
+# python compile.py
+
+export U_BIN=${U_BASE}/udocker
+${U_BIN} ps
+
+if [[ -z $1 || ! -d $1 ]]; then
+    exit
+fi
+
+if [[ ! -f $1/makefile && ! -f $1/Makefile ]]; then
+    exit
+fi
+
+# if there is no container, create
+if [[ -z `${U_BIN} ps | awk '{ print $4 }' | grep gccpy` ]]; then
+    # if there is no image, pull
+    if [[ ! `${U_BIN} images | awk '{print $1}' | grep gcc:latest` == "gcc:latest" ]]; then
+        ${U_BIN} pull gcc:latest
+    fi
+    ${U_BIN} create --name=gcc gcc:latest
+fi
+
+# we have a container
+# now run and compile
+${U_BIN} run --volume=$1:$1 gcc cd $1 && make
