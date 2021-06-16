@@ -48,7 +48,7 @@ export UDOCKER_DIR=${BASE_DIR}/.udocker
 
 ${U_BASE}/udocker install
 
-if [[ ! -f ./udocker ]]; then
+if [[ ! -e ./udocker ]]; then
     ln -s ${U_BASE} ./udocker 2> /dev/null
 fi
 
