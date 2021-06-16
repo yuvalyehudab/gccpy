@@ -48,7 +48,9 @@ export UDOCKER_DIR=${BASE_DIR}/.udocker
 
 ${U_BASE}/udocker install
 
-ln -s ${U_BASE} ./udocker 2> /dev/null
+if [[ ! -f ./udocker ]]; then
+    ln -s ${U_BASE} ./udocker 2> /dev/null
+fi
 
 # cancelled. replaced with direct script
 # python compile.py
