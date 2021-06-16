@@ -37,7 +37,7 @@ eval "$(${C_BIN} shell.bash hook) 2> /dev/null"
 set -e #-v
 
 if [[ `conda info --env | grep udocker | awk '{ print $1 }'` == "udocker-gccpy" ]]; then
-    ${C_BIN} create -y -q -n udocker python=3.8
+    ${C_BIN} create -y -q -n udocker-gccpy python=3.8
 fi
 conda activate udocker-gccpy
 
