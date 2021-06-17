@@ -75,6 +75,8 @@ if [[ -z `${U_BIN} ps | awk '{ print $4 }' | grep gccpy` ]]; then
     ${U_BIN} create --name=gcc gcc:latest
 fi
 
+APP_PATH=$(python -c "import pathlib; print(pathlib.Path('$1').resolve())")
+
 # we have a container
 # now run and compile
-${U_BIN} run --volume=$1:$1 gcc cd $1 && make
+${U_BIN} run --volume=${APP_PATH}:${APP_PATH} gcc cd $1 && make
