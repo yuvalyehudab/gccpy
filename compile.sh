@@ -36,7 +36,7 @@ eval "$(${C_BIN} shell.bash hook) 2> /dev/null"
 # uncomment '-v' when debugging
 set -e #-v
 
-if [[ `conda info --env | grep udocker | awk '{ print $1 }'` == "udocker-gccpy" ]]; then
+if [[ ! `conda info --env | grep udocker | awk '{ print $1 }'` == "udocker-gccpy" ]]; then
     ${C_BIN} create -y -q -n udocker-gccpy python=3.8
 fi
 conda activate udocker-gccpy
@@ -72,11 +72,11 @@ if [[ -z `${U_BIN} ps | awk '{ print $4 }' | grep gccpy` ]]; then
     if [[ ! `${U_BIN} images | awk '{print $1}' | grep gcc:latest` == "gcc:latest" ]]; then
         ${U_BIN} pull gcc:latest
     fi
-    ${U_BIN} create --name=gcc gcc:latest
+    ${U_BIN} create --name=gccpy gcc:latest
 fi
 
 APP_PATH=$(python -c "import pathlib; print(pathlib.Path('$1').resolve())")
 
 # we have a container
 # now run and compile
-${U_BIN} run --volume=${APP_PATH}:${APP_PATH} gcc cd $1 && make
+${U_BIN} -q run --volume=${APP_PATH}:${APP_PATH} gccpy bash -c "cd ${APP_PATH} && make"
